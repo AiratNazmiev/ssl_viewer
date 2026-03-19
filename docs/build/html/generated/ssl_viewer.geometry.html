@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ssl_viewer.geometry &#8212; ssl-viewer 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=cb25574f" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ssl_viewer.layers" href="ssl_viewer.layers.html" />
+    <link rel="prev" title="ssl_viewer.constants" href="ssl_viewer.constants.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-ssl_viewer.geometry">
+<span id="ssl-viewer-geometry"></span><h1>ssl_viewer.geometry<a class="headerlink" href="#module-ssl_viewer.geometry" title="Link to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ssl_viewer.geometry.bearing_deg_from_en" title="ssl_viewer.geometry.bearing_deg_from_en"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bearing_deg_from_en</span></code></a>(east_m, north_m)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ssl_viewer.geometry.endpoint_from_array_az_el" title="ssl_viewer.geometry.endpoint_from_array_az_el"><code class="xref py py-obj docutils literal notranslate"><span class="pre">endpoint_from_array_az_el</span></code></a>(lon0, lat0, ...)</p></td>
+<td><p>Convert planar-array az/el to a world-space ray endpoint.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ssl_viewer.geometry.heading_unit" title="ssl_viewer.geometry.heading_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heading_unit</span></code></a>(heading_deg)</p></td>
+<td><p>0 deg = north, 90 deg = east, clockwise positive.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ssl_viewer.geometry.make_arrow_polygon" title="ssl_viewer.geometry.make_arrow_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_arrow_polygon</span></code></a>(lon0, lat0, heading_deg, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ssl_viewer.geometry.offset_m_to_lnglat" title="ssl_viewer.geometry.offset_m_to_lnglat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">offset_m_to_lnglat</span></code></a>(lon0, lat0, east_m, north_m)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ssl_viewer.geometry.pos_from_forward_right" title="ssl_viewer.geometry.pos_from_forward_right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_from_forward_right</span></code></a>(lon0, lat0, ...[, z_m])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ssl_viewer.geometry.pos_from_local_en" title="ssl_viewer.geometry.pos_from_local_en"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_from_local_en</span></code></a>(lon0, lat0, east_m, north_m)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ssl_viewer.geometry.wrap_360" title="ssl_viewer.geometry.wrap_360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_360</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.bearing_deg_from_en">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">bearing_deg_from_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">east_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">north_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#bearing_deg_from_en"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.bearing_deg_from_en" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.endpoint_from_array_az_el">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">endpoint_from_array_az_el</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_x_heading_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_azimuth_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_elevation_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ray_length_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_z_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#endpoint_from_array_az_el"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.endpoint_from_array_az_el" title="Link to this definition">¶</a></dt>
+<dd><p>Convert planar-array az/el to a world-space ray endpoint.</p>
+<dl class="simple">
+<dt>Assumptions:</dt><dd><ul class="simple">
+<li><p>local +x lies in the ground plane and has heading array_x_heading_deg</p></li>
+<li><p>local +y lies in the ground plane and is 90 deg CCW from +x</p></li>
+<li><p>local +z is world up</p></li>
+</ul>
+</dd>
+<dt>Array azimuth/elevation convention:</dt><dd><ul class="simple">
+<li><p>azimuth is CCW from local +x in the local x-y plane</p></li>
+<li><p>elevation is above the local x-y plane toward +z</p></li>
+</ul>
+</dd>
+<dt>Local ray:</dt><dd><p>x = cos(el) * cos(az)
+y = cos(el) * sin(az)
+z = sin(el)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.heading_unit">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">heading_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heading_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#heading_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.heading_unit" title="Link to this definition">¶</a></dt>
+<dd><p>0 deg = north, 90 deg = east, clockwise positive.
+Returns (east, north).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.make_arrow_polygon">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">make_arrow_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heading_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_offset_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shaft_len_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shaft_half_w_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_len_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_half_w_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#make_arrow_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.make_arrow_polygon" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.offset_m_to_lnglat">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">offset_m_to_lnglat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">east_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">north_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#offset_m_to_lnglat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.offset_m_to_lnglat" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.pos_from_forward_right">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">pos_from_forward_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heading_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#pos_from_forward_right"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.pos_from_forward_right" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.pos_from_local_en">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">pos_from_local_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">east_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">north_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#pos_from_local_en"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.pos_from_local_en" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ssl_viewer.geometry.wrap_360">
+<span class="sig-prename descclassname"><span class="pre">ssl_viewer.geometry.</span></span><span class="sig-name descname"><span class="pre">wrap_360</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/ssl_viewer/geometry.html#wrap_360"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssl_viewer.geometry.wrap_360" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">ssl-viewer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geometry.html">Geometry and conventions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#package-overview">Package overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-main">Entry point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-ssl_viewer">Package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API reference</a><ul>
+  <li><a href="ssl_viewer.html">ssl_viewer</a><ul>
+      <li>Previous: <a href="ssl_viewer.constants.html" title="previous chapter">ssl_viewer.constants</a></li>
+      <li>Next: <a href="ssl_viewer.layers.html" title="next chapter">ssl_viewer.layers</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/generated/ssl_viewer.geometry.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

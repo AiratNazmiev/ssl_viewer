@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ssl_viewer.app &#8212; ssl-viewer 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=cb25574f" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ssl_viewer.app</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+
+<span class="kn">from</span> <span class="nn">.layers</span> <span class="kn">import</span> <span class="n">build_dynamic_layers</span><span class="p">,</span> <span class="n">build_static_layers</span><span class="p">,</span> <span class="n">make_deck</span>
+<span class="kn">from</span> <span class="nn">.receiver</span> <span class="kn">import</span> <span class="n">Receiver</span>
+<span class="kn">from</span> <span class="nn">.session</span> <span class="kn">import</span> <span class="n">ensure_receiver</span><span class="p">,</span> <span class="n">init_session_state</span>
+<span class="kn">from</span> <span class="nn">.telemetry</span> <span class="kn">import</span> <span class="n">TargetTelemetry</span>
+
+
+<div class="viewcode-block" id="render_sidebar">
+<a class="viewcode-back" href="../../generated/ssl_viewer.app.html#ssl_viewer.render_sidebar">[docs]</a>
+<span class="k">def</span> <span class="nf">render_sidebar</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="p">:</span>
+        <span class="n">anchor_lat</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Anchor latitude&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">55.790450</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.6f</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">anchor_lon</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span><span class="s2">&quot;Anchor longitude&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">49.124100</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.6f</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">array_x_heading_deg</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span>
+            <span class="s2">&quot;Array +x heading (clockwise from north)&quot;</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="mf">359.0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mf">120.0</span><span class="p">,</span>
+            <span class="n">step</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">refresh_ms</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s2">&quot;Refresh interval (ms)&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+        <span class="n">mic_radius_m</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s2">&quot;Mic body radius (m)&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">mic_height_m</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s2">&quot;Mic body height (m)&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">ray_length_m</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s2">&quot;Ray length (m)&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">show_basemap</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">checkbox</span><span class="p">(</span><span class="s2">&quot;Show basemap&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">divider</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="s2">&quot;connection_form&quot;</span><span class="p">,</span> <span class="n">clear_on_submit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">form_enabled</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">checkbox</span><span class="p">(</span>
+                <span class="s2">&quot;Enable live telemetry&quot;</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_enabled&quot;</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="n">form_endpoint</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span>
+                <span class="s2">&quot;Connect endpoint&quot;</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_endpoint&quot;</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="n">form_hwm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span>
+                <span class="s2">&quot;Receiver HWM&quot;</span><span class="p">,</span>
+                <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">max_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_hwm&quot;</span><span class="p">]),</span>
+                <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">form_topic</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span>
+                <span class="s2">&quot;Topic filter&quot;</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_topic&quot;</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="n">form_username</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span>
+                <span class="s2">&quot;Username&quot;</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_username&quot;</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="n">form_password</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span>
+                <span class="s2">&quot;Password&quot;</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_password&quot;</span><span class="p">]),</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">apply_conn</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">form_submit_button</span><span class="p">(</span><span class="s2">&quot;Apply connection settings&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">apply_conn</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">form_enabled</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_endpoint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">form_endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_hwm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">form_hwm</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_topic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">form_topic</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_username&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">form_username</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">form_password</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;anchor_lat&quot;</span><span class="p">:</span> <span class="n">anchor_lat</span><span class="p">,</span>
+        <span class="s2">&quot;anchor_lon&quot;</span><span class="p">:</span> <span class="n">anchor_lon</span><span class="p">,</span>
+        <span class="s2">&quot;array_x_heading_deg&quot;</span><span class="p">:</span> <span class="n">array_x_heading_deg</span><span class="p">,</span>
+        <span class="s2">&quot;refresh_ms&quot;</span><span class="p">:</span> <span class="n">refresh_ms</span><span class="p">,</span>
+        <span class="s2">&quot;mic_radius_m&quot;</span><span class="p">:</span> <span class="n">mic_radius_m</span><span class="p">,</span>
+        <span class="s2">&quot;mic_height_m&quot;</span><span class="p">:</span> <span class="n">mic_height_m</span><span class="p">,</span>
+        <span class="s2">&quot;ray_length_m&quot;</span><span class="p">:</span> <span class="n">ray_length_m</span><span class="p">,</span>
+        <span class="s2">&quot;show_basemap&quot;</span><span class="p">:</span> <span class="n">show_basemap</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="render_metrics">
+<a class="viewcode-back" href="../../generated/ssl_viewer.app.html#ssl_viewer.render_metrics">[docs]</a>
+<span class="k">def</span> <span class="nf">render_metrics</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">TargetTelemetry</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">horizontal_bearing_deg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">top1</span><span class="p">,</span> <span class="n">top2</span><span class="p">,</span> <span class="n">top3</span><span class="p">,</span> <span class="n">top4</span><span class="p">,</span> <span class="n">top5</span><span class="p">,</span> <span class="n">top6</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">top1</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Array azimuth&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">az_deg</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">)</span>
+        <span class="n">top2</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Array elevation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">el_deg</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">)</span>
+        <span class="n">top3</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span>
+            <span class="s2">&quot;Horizontal bearing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;vertical&quot;</span> <span class="k">if</span> <span class="n">horizontal_bearing_deg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">horizontal_bearing_deg</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">top4</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Confidence&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">confidence</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">top5</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Target ID&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">target_id</span><span class="p">))</span>
+        <span class="n">top6</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Latency&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">latency_ms</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">top1</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Array azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">top2</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Array elevation&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">top3</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Horizontal bearing&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">top4</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Confidence&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">top5</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Target ID&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">top6</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Latency&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="render_status">
+<a class="viewcode-back" href="../../generated/ssl_viewer.app.html#ssl_viewer.render_status">[docs]</a>
+<span class="k">def</span> <span class="nf">render_status</span><span class="p">(</span><span class="n">rx</span><span class="p">:</span> <span class="n">Receiver</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">status1</span><span class="p">,</span> <span class="n">status2</span><span class="p">,</span> <span class="n">status3</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">status1</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Subscriber&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span> <span class="k">if</span> <span class="n">rx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+    <span class="n">status2</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Superseded&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rx</span><span class="o">.</span><span class="n">superseded</span> <span class="k">if</span> <span class="n">rx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">status3</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;Recv errors&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rx</span><span class="o">.</span><span class="n">recv_errors</span> <span class="k">if</span> <span class="n">rx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../generated/ssl_viewer.app.html#ssl_viewer.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">&quot;wide&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;SSL viewer&quot;</span><span class="p">)</span>
+
+    <span class="n">init_session_state</span><span class="p">()</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">render_sidebar</span><span class="p">()</span>
+
+    <span class="n">rx_username</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_username&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+    <span class="n">rx_password</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_password&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
+
+    <span class="n">ensure_receiver</span><span class="p">(</span>
+        <span class="n">enabled</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_enabled&quot;</span><span class="p">]),</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_endpoint&quot;</span><span class="p">]),</span>
+        <span class="n">hwm</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_hwm&quot;</span><span class="p">]),</span>
+        <span class="n">topic</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;conn_topic&quot;</span><span class="p">]),</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">rx_username</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">rx_password</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;rx_error&quot;</span><span class="p">]:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Receiver startup failed: </span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s1">&#39;rx_error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">refresh_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;refresh_ms&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">1000.0</span>
+
+    <span class="nd">@st</span><span class="o">.</span><span class="n">fragment</span><span class="p">(</span><span class="n">run_every</span><span class="o">=</span><span class="n">refresh_s</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">live_view</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rx</span><span class="p">:</span> <span class="n">Receiver</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">latest</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">poll_latest</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">latest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;latest_msg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">latest</span>
+
+        <span class="n">msg</span><span class="p">:</span> <span class="n">TargetTelemetry</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;latest_msg&quot;</span><span class="p">)</span>
+
+        <span class="n">static_layers</span> <span class="o">=</span> <span class="n">build_static_layers</span><span class="p">(</span>
+            <span class="n">anchor_lon</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lon&quot;</span><span class="p">]),</span>
+            <span class="n">anchor_lat</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lat&quot;</span><span class="p">]),</span>
+            <span class="n">array_x_heading_deg</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;array_x_heading_deg&quot;</span><span class="p">]),</span>
+            <span class="n">mic_radius_m</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;mic_radius_m&quot;</span><span class="p">]),</span>
+            <span class="n">mic_height_m</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;mic_height_m&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dynamic_layers</span><span class="p">,</span> <span class="n">horizontal_bearing_deg</span> <span class="o">=</span> <span class="n">build_dynamic_layers</span><span class="p">(</span>
+                <span class="n">anchor_lon</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lon&quot;</span><span class="p">]),</span>
+                <span class="n">anchor_lat</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lat&quot;</span><span class="p">]),</span>
+                <span class="n">array_x_heading_deg</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;array_x_heading_deg&quot;</span><span class="p">]),</span>
+                <span class="n">mic_height_m</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;mic_height_m&quot;</span><span class="p">]),</span>
+                <span class="n">ray_length_m</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;ray_length_m&quot;</span><span class="p">]),</span>
+                <span class="n">array_azimuth_deg</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">az_deg</span><span class="p">,</span>
+                <span class="n">array_elevation_deg</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">el_deg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">layers</span> <span class="o">=</span> <span class="n">static_layers</span> <span class="o">+</span> <span class="n">dynamic_layers</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">horizontal_bearing_deg</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">layers</span> <span class="o">=</span> <span class="n">static_layers</span>
+
+        <span class="n">render_metrics</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">horizontal_bearing_deg</span><span class="p">)</span>
+        <span class="n">render_status</span><span class="p">(</span><span class="n">rx</span><span class="p">)</span>
+
+        <span class="n">deck</span> <span class="o">=</span> <span class="n">make_deck</span><span class="p">(</span>
+            <span class="n">anchor_lon</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lon&quot;</span><span class="p">]),</span>
+            <span class="n">anchor_lat</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;anchor_lat&quot;</span><span class="p">]),</span>
+            <span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">,</span>
+            <span class="n">show_basemap</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;show_basemap&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">pydeck_chart</span><span class="p">(</span><span class="n">deck</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">)</span>
+
+    <span class="n">live_view</span><span class="p">()</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ssl-viewer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../geometry.html">Geometry and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

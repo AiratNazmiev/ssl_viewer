@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Usage &#8212; ssl-viewer 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=cb25574f" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Geometry and conventions" href="geometry.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h1>
+<section id="run-the-application">
+<h2>Run the application<a class="headerlink" href="#run-the-application" title="Link to this heading">¶</a></h2>
+<p>From the project root:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>streamlit<span class="w"> </span>run<span class="w"> </span>main.py
+</pre></div>
+</div>
+</section>
+<section id="what-the-application-does">
+<h2>What the application does<a class="headerlink" href="#what-the-application-does" title="Link to this heading">¶</a></h2>
+<p>The application subscribes to telemetry over ZeroMQ and visualizes a target
+ray on a 3D map.</p>
+</section>
+<section id="default-endpoint">
+<h2>Default endpoint<a class="headerlink" href="#default-endpoint" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tcp://127.0.0.1:5555
+</pre></div>
+</div>
+</section>
+<section id="sidebar-controls">
+<h2>Sidebar controls<a class="headerlink" href="#sidebar-controls" title="Link to this heading">¶</a></h2>
+<p>The sidebar configures:</p>
+<ul class="simple">
+<li><p>anchor latitude / longitude</p></li>
+<li><p>array +x heading</p></li>
+<li><p>refresh interval</p></li>
+<li><p>microphone body radius / height</p></li>
+<li><p>ray length</p></li>
+<li><p>basemap visibility</p></li>
+<li><p>live telemetry connection settings</p></li>
+</ul>
+</section>
+<section id="connection-settings">
+<h2>Connection settings<a class="headerlink" href="#connection-settings" title="Link to this heading">¶</a></h2>
+<p>Connection updates are applied through the sidebar form button.</p>
+</section>
+<section id="expected-telemetry-payload">
+<h2>Expected telemetry payload<a class="headerlink" href="#expected-telemetry-payload" title="Link to this heading">¶</a></h2>
+<p>The viewer expects a JSON object with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">az_deg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">el_deg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">confidence</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_id</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ts_ns</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ssl-viewer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-application">Run the application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-the-application-does">What the application does</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#default-endpoint">Default endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sidebar-controls">Sidebar controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connection-settings">Connection settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expected-telemetry-payload">Expected telemetry payload</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="geometry.html" title="next chapter">Geometry and conventions</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/usage.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
